@@ -28,7 +28,7 @@ dotnet run -- --help
 
 ## 要件
 
-- .NET 9.0 以降
+- .NET 8.0 以降
 
 ## CI/CD
 

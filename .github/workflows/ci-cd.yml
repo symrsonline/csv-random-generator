@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '8.0.x'
 
     - name: Restore dependencies
       run: dotnet restore
@@ -27,8 +27,11 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
+    - name: Build tests
+      run: dotnet build CsvRandomGenerator.Tests/CsvRandomGenerator.Tests.csproj --configuration Release --no-restore
+
     - name: Run tests
-      run: dotnet test CsvRandomGenerator.Tests/CsvRandomGenerator.Tests.csproj --no-restore --verbosity normal
+      run: dotnet test CsvRandomGenerator.Tests/CsvRandomGenerator.Tests.csproj --no-build --verbosity normal
 
   release:
     needs: build-and-test
@@ -42,7 +45,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '8.0.x'
 
     - name: Restore dependencies
       run: dotnet restore
