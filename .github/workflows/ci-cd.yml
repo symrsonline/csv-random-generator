@@ -28,7 +28,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Run tests
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test CsvRandomGenerator.Tests/CsvRandomGenerator.Tests.csproj --no-restore --verbosity normal
 
   release:
     needs: build-and-test
