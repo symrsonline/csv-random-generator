@@ -1,0 +1,10 @@
+bin/
+obj/
+*.user
+*.tmp
+*.log
+output.csv
+test.csv
+*.swp
+*.swo
+.vscode/settings.json
