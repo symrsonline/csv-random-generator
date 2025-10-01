@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CsvRandomGenerator.Tests;
 
-public class UnitTest1
+public class UnitTest
 {
     [Fact]
     public void TestCsvGeneration()
