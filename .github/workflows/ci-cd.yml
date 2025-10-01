@@ -42,9 +42,7 @@ jobs:
         file: ./CsvRandomGenerator.Tests/TestResults/*/coverage.cobertura.xml
 
   release:
-    needs: build-and-test
     runs-on: windows-latest
-    if: github.event_name == 'release'
 
     steps:
     - name: Checkout code
