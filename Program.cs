@@ -61,7 +61,7 @@ namespace CsvRandomGenerator
             Console.WriteLine("  Columns have fixed random types: int, double, string, or DateTime.");
         }
 
-        static Dictionary<string, string> ParseArgs(string[] args)
+        public static Dictionary<string, string> ParseArgs(string[] args)
         {
             var options = new Dictionary<string, string>();
             for (int i = 0; i < args.Length; i += 2)

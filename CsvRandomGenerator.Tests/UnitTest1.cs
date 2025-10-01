@@ -151,12 +151,40 @@ public class UnitTest1
         stringWriter.Dispose();
     }
 
-    [Fact]
-    public void TestArgsParsing()
+    [Theory]
+    [InlineData(new string[] {}, 0)]
+    [InlineData(new string[] { "--rows", "10" }, 1)]
+    [InlineData(new string[] { "--rows", "10", "--cols", "5" }, 2)]
+    [InlineData(new string[] { "--rows", "10", "--cols", "5", "--output", "test.csv" }, 3)]
+    [InlineData(new string[] { "--rows", "10", "--cols", "5", "--output", "test.csv", "--sort-column", "0" }, 4)]
+    [InlineData(new string[] { "--rows", "10", "--cols", "5", "--output", "test.csv", "--sort-column", "0", "--duration", "30" }, 5)]
+    [InlineData(new string[] { "--rows" }, 0)] // Odd number, no value
+    [InlineData(new string[] { "rows", "10" }, 0)] // Not starting with --
+    [InlineData(new string[] { "--help" }, 0)] // No value
+    [InlineData(new string[] { "--rows", "10", "extra" }, 1)] // Extra arg
+    public void TestParseArgs(string[] args, int expectedCount)
     {
-        // This would require making ParseArgs public or testing Main indirectly
-        // For now, test that Main doesn't throw with valid args
-        // Since Main is static and private, we can test GenerateCsv directly
-        // But to increase coverage, assume current tests cover enough
+        // Act
+        var result = CsvRandomGenerator.Program.ParseArgs(args);
+
+        // Assert
+        Assert.Equal(expectedCount, result.Count);
+    }
+
+    [Fact]
+    public void TestParseArgsValues()
+    {
+        // Arrange
+        var args = new string[] { "--rows", "20", "--cols", "3", "--output", "myfile.csv", "--sort-column", "1", "--duration", "60" };
+
+        // Act
+        var result = CsvRandomGenerator.Program.ParseArgs(args);
+
+        // Assert
+        Assert.Equal("20", result["rows"]);
+        Assert.Equal("3", result["cols"]);
+        Assert.Equal("myfile.csv", result["output"]);
+        Assert.Equal("1", result["sort-column"]);
+        Assert.Equal("60", result["duration"]);
     }
 }
