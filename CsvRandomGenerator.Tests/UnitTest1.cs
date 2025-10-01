@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Xunit;
 using CsvRandomGenerator;
+using System.Text;
 
 namespace CsvRandomGenerator.Tests;
 
@@ -122,6 +123,32 @@ public class UnitTest1
 
         // Cleanup
         File.Delete(outputPath);
+    }
+
+    [Fact]
+    public void TestHelp()
+    {
+        // Arrange
+        var stringWriter = new StringWriter();
+        var originalOut = Console.Out;
+        Console.SetOut(stringWriter);
+
+        // Act
+        CsvRandomGenerator.Program.Main(new string[] { "--help" });
+
+        // Assert
+        var output = stringWriter.ToString();
+        Assert.Contains("CSV Random Generator", output);
+        Assert.Contains("--rows", output);
+        Assert.Contains("--cols", output);
+        Assert.Contains("--output", output);
+        Assert.Contains("--sort-column", output);
+        Assert.Contains("--duration", output);
+        Assert.Contains("--help", output);
+
+        // Cleanup
+        Console.SetOut(originalOut);
+        stringWriter.Dispose();
     }
 
     [Fact]
