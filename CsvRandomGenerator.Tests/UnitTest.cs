@@ -265,7 +265,7 @@ public class UnitTest
     public void TestParseArgs(string[] args, int expectedCount)
     {
         // Act
-        var result = CsvRandomGenerator.Program.ParseArgs(args);
+        var result = ArgumentParser.ParseArgs(args);
 
         // Assert
         Assert.Equal(expectedCount, result.Count);
@@ -278,7 +278,7 @@ public class UnitTest
         var args = new string[] { "--rows", "20", "--cols", "3", "--output", "myfile.csv", "--sort-column", "1", "--duration", "60", "--max-files", "5" };
 
         // Act
-        var result = CsvRandomGenerator.Program.ParseArgs(args);
+        var result = ArgumentParser.ParseArgs(args);
 
         // Assert
         Assert.Equal("20", result["rows"]);
