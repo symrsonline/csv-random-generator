@@ -275,14 +275,14 @@ public class UnitTest1
         string output = "test_datatypes.csv";
 
         // Act: Generate CSV with many rows and columns to ensure all types appear
-        CsvRandomGenerator.Program.GenerateCsv(10000, 10, folder, output, null);
+        CsvRandomGenerator.Program.GenerateCsv(20000, 10, folder, output, null);
 
         // Assert
         var files = Directory.GetFiles(folder, "test_datatypes.csv");
         Assert.True(files.Length > 0);
         var outputPath = files.First();
         var lines = File.ReadAllLines(outputPath);
-        Assert.Equal(10000, lines.Length);
+        Assert.Equal(20000, lines.Length);
 
         bool hasInt = false, hasDouble = false, hasString = false, hasDateTime = false;
 
