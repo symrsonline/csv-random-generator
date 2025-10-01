@@ -1,5 +1,8 @@
 # CSV ランダムジェネレーター
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/symrsonline/csv-random-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/symrsonline/csv-random-generator)
+
 このプロジェクトは、指定された行数と列数のランダムなCSVファイルを生成し、指定されたフォルダに出力します。
 
 ## 使用方法
@@ -54,3 +57,7 @@ dotnet test
 - 倍精度浮動小数点数 (0-100、小数点以下2桁)
 - 文字列 (ランダムな大文字アルファベット、5-10文字)
 - 日時 (yyyy/MM/dd HH:mm:ss形式、ランダムな日時)
+
+## ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。詳細は[LICENSE](LICENSE)ファイルを参照してください。
