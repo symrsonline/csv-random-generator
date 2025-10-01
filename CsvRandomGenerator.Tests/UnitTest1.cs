@@ -12,15 +12,17 @@ public class UnitTest1
     {
         // Arrange
         string tempPath = Path.GetTempPath();
-        string outputPath = Path.Combine(tempPath, "test.csv");
-        string folder = Path.GetDirectoryName(outputPath) ?? tempPath;
-        string output = Path.GetFileName(outputPath);
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        Directory.CreateDirectory(folder);
+        string output = "test.csv";
 
         // Act
         CsvRandomGenerator.Program.GenerateCsv(5, 3, folder, output, null);
 
         // Assert
-        Assert.True(File.Exists(outputPath));
+        var files = Directory.GetFiles(folder, "test.csv");
+        Assert.True(files.Length > 0);
+        var outputPath = files.First();
         var lines = File.ReadAllLines(outputPath);
         Assert.Equal(5, lines.Length);
         foreach (var line in lines)
@@ -30,7 +32,7 @@ public class UnitTest1
         }
 
         // Cleanup
-        File.Delete(outputPath);
+        Directory.Delete(folder, true);
     }
 
     [Fact]
@@ -38,14 +40,17 @@ public class UnitTest1
     {
         // Arrange
         string tempPath = Path.GetTempPath();
-        string outputPath = Path.Combine(tempPath, "test_sorted.csv");
-        string folder = Path.GetDirectoryName(outputPath) ?? tempPath;
-        string output = Path.GetFileName(outputPath);
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        Directory.CreateDirectory(folder);
+        string output = "test_sorted.csv";
 
         // Act
         CsvRandomGenerator.Program.GenerateCsv(10, 2, folder, output, 0); // Sort by first column
 
         // Assert
+        var files = Directory.GetFiles(folder, "test_sorted.csv");
+        Assert.True(files.Length > 0);
+        var outputPath = files.First();
         Assert.True(File.Exists(outputPath));
         var lines = File.ReadAllLines(outputPath);
         Assert.Equal(10, lines.Length);
@@ -73,7 +78,7 @@ public class UnitTest1
         }
 
         // Cleanup
-        File.Delete(outputPath);
+        Directory.Delete(folder, true);
     }
 
     [Fact]
@@ -81,9 +86,9 @@ public class UnitTest1
     {
         // Arrange
         string tempPath = Path.GetTempPath();
-        string outputPath = Path.Combine(tempPath, "test_append.csv");
-        string folder = Path.GetDirectoryName(outputPath) ?? tempPath;
-        string output = Path.GetFileName(outputPath);
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        Directory.CreateDirectory(folder);
+        string output = "test_append.csv";
 
         // Act: First generate
         CsvRandomGenerator.Program.GenerateCsv(3, 2, folder, output, null, append: false);
@@ -91,7 +96,9 @@ public class UnitTest1
         CsvRandomGenerator.Program.GenerateCsv(2, 2, folder, output, null, append: true);
 
         // Assert
-        Assert.True(File.Exists(outputPath));
+        var files = Directory.GetFiles(folder, "test_append.csv");
+        Assert.True(files.Length >= 1);
+        var outputPath = files.First();
         var lines = File.ReadAllLines(outputPath);
         Assert.Equal(5, lines.Length); // 3 + 2
         foreach (var line in lines)
@@ -101,7 +108,7 @@ public class UnitTest1
         }
 
         // Cleanup
-        File.Delete(outputPath);
+        Directory.Delete(folder, true);
     }
 
     [Fact]
@@ -222,15 +229,17 @@ public class UnitTest1
     {
         // Arrange
         string tempPath = Path.GetTempPath();
-        string outputPath = Path.Combine(tempPath, "test_datatypes.csv");
-        string folder = Path.GetDirectoryName(outputPath) ?? tempPath;
-        string output = Path.GetFileName(outputPath);
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        Directory.CreateDirectory(folder);
+        string output = "test_datatypes.csv";
 
         // Act: Generate CSV with many rows and columns to ensure all types appear
         CsvRandomGenerator.Program.GenerateCsv(10000, 10, folder, output, null);
 
         // Assert
-        Assert.True(File.Exists(outputPath));
+        var files = Directory.GetFiles(folder, "test_datatypes.csv");
+        Assert.True(files.Length > 0);
+        var outputPath = files.First();
         var lines = File.ReadAllLines(outputPath);
         Assert.Equal(10000, lines.Length);
 
@@ -258,6 +267,6 @@ public class UnitTest1
         Assert.True(hasDateTime, "Should have datetime columns");
 
         // Cleanup
-        File.Delete(outputPath);
+        Directory.Delete(folder, true);
     }
 }

@@ -23,6 +23,8 @@ namespace CsvRandomGenerator
             string outputPath = GetOption(options, "output", "output.csv");
             string folder = Path.GetDirectoryName(outputPath) ?? ".";
             string output = Path.GetFileName(outputPath);
+            string baseName = Path.GetFileNameWithoutExtension(output);
+            string extension = Path.GetExtension(output);
             int? sortColumn = GetOptionNullable(options, "sort-column");
             int duration = GetOption(options, "duration", 0);
             int maxFiles = GetOption(options, "max-files", 0);
@@ -30,8 +32,6 @@ namespace CsvRandomGenerator
             if (duration > 0)
             {
                 Console.WriteLine($"Generating CSV every {duration} seconds. Press Ctrl+C to stop.");
-                string baseName = Path.GetFileNameWithoutExtension(output);
-                string extension = Path.GetExtension(output);
                 while (true)
                 {
                     if (maxFiles == 0 || Directory.GetFiles(folder).Length < maxFiles)
@@ -44,7 +44,8 @@ namespace CsvRandomGenerator
             }
             else
             {
-                GenerateCsv(rows, cols, folder, output, sortColumn, append: false);
+                string timestampedOutput = baseName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + extension;
+                GenerateCsv(rows, cols, folder, timestampedOutput, sortColumn, append: false);
             }
         }
 
