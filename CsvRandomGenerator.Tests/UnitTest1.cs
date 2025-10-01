@@ -158,6 +158,7 @@ public class UnitTest1
     [InlineData(new string[] { "--rows", "10", "--cols", "5", "--output", "test.csv" }, 3)]
     [InlineData(new string[] { "--rows", "10", "--cols", "5", "--output", "test.csv", "--sort-column", "0" }, 4)]
     [InlineData(new string[] { "--rows", "10", "--cols", "5", "--output", "test.csv", "--sort-column", "0", "--duration", "30" }, 5)]
+    [InlineData(new string[] { "--rows", "10", "--cols", "5", "--output", "test.csv", "--sort-column", "0", "--duration", "30", "--max-files", "10" }, 6)]
     [InlineData(new string[] { "--rows" }, 0)] // Odd number, no value
     [InlineData(new string[] { "rows", "10" }, 0)] // Not starting with --
     [InlineData(new string[] { "--help" }, 0)] // No value
@@ -175,7 +176,7 @@ public class UnitTest1
     public void TestParseArgsValues()
     {
         // Arrange
-        var args = new string[] { "--rows", "20", "--cols", "3", "--output", "myfile.csv", "--sort-column", "1", "--duration", "60" };
+        var args = new string[] { "--rows", "20", "--cols", "3", "--output", "myfile.csv", "--sort-column", "1", "--duration", "60", "--max-files", "5" };
 
         // Act
         var result = CsvRandomGenerator.Program.ParseArgs(args);
@@ -186,6 +187,7 @@ public class UnitTest1
         Assert.Equal("myfile.csv", result["output"]);
         Assert.Equal("1", result["sort-column"]);
         Assert.Equal("60", result["duration"]);
+        Assert.Equal("5", result["max-files"]);
     }
 
     [Fact(Timeout = 2000)]

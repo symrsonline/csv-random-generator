@@ -25,13 +25,17 @@ namespace CsvRandomGenerator
             string output = Path.GetFileName(outputPath);
             int? sortColumn = GetOptionNullable(options, "sort-column");
             int duration = GetOption(options, "duration", 0);
+            int maxFiles = GetOption(options, "max-files", 0);
 
             if (duration > 0)
             {
                 Console.WriteLine($"Generating CSV every {duration} seconds. Press Ctrl+C to stop.");
                 while (true)
                 {
-                    GenerateCsv(rows, cols, folder, output, null, append: true);
+                    if (maxFiles == 0 || Directory.GetFiles(folder).Length < maxFiles)
+                    {
+                        GenerateCsv(rows, cols, folder, output, null, append: true);
+                    }
                     Thread.Sleep(duration * 1000);
                 }
             }
@@ -55,6 +59,7 @@ namespace CsvRandomGenerator
             Console.WriteLine("  --output <path>        Output file path (default: output.csv)");
             Console.WriteLine("  --sort-column <index>  Column to sort by (0-based index, optional)");
             Console.WriteLine("  --duration <seconds>   Interval to append data (optional, continuous mode)");
+            Console.WriteLine("  --max-files <number>   Maximum number of files in output folder (0 for unlimited, default: 0)");
             Console.WriteLine("  --help, -h             Show this help message");
             Console.WriteLine();
             Console.WriteLine("Data Types:");
