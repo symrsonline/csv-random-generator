@@ -199,6 +199,52 @@ public class UnitTest1
         stringWriter.Dispose();
     }
 
+    [Fact]
+    public void TestHelpShort()
+    {
+        // Arrange
+        var stringWriter = new StringWriter();
+        var originalOut = Console.Out;
+        Console.SetOut(stringWriter);
+
+        // Act
+        CsvRandomGenerator.Program.Main(new string[] { "-h" });
+
+        // Assert
+        var output = stringWriter.ToString();
+        Assert.Contains("CSV Random Generator", output);
+        Assert.Contains("--rows", output);
+        Assert.Contains("--cols", output);
+        Assert.Contains("--output", output);
+        Assert.Contains("--sort-column", output);
+        Assert.Contains("--duration", output);
+        Assert.Contains("--help", output);
+
+        // Cleanup
+        Console.SetOut(originalOut);
+        stringWriter.Dispose();
+    }
+
+    [Fact]
+    public void TestMainEmptyArgs()
+    {
+        // Arrange
+        var stringWriter = new StringWriter();
+        var originalOut = Console.Out;
+        Console.SetOut(stringWriter);
+
+        // Act
+        CsvRandomGenerator.Program.Main(new string[] { });
+
+        // Assert: Should show help when no args
+        var output = stringWriter.ToString();
+        Assert.Contains("CSV Random Generator", output);
+
+        // Cleanup
+        Console.SetOut(originalOut);
+        stringWriter.Dispose();
+    }
+
     [Theory]
     [InlineData(new string[] {}, 0)]
     [InlineData(new string[] { "--rows", "10" }, 1)]
@@ -313,14 +359,14 @@ public class UnitTest1
         string output = "test_datatypes.csv";
 
         // Act: Generate CSV with many rows and columns to ensure all types appear
-        CsvRandomGenerator.Program.GenerateCsv(20000, 10, folder, output, null);
+        CsvRandomGenerator.Program.GenerateCsv(25000, 10, folder, output, null);
 
         // Assert
         var files = Directory.GetFiles(folder, "test_datatypes.csv");
         Assert.True(files.Length > 0);
         var outputPath = files.First();
         var lines = File.ReadAllLines(outputPath);
-        Assert.Equal(20000, lines.Length);
+        Assert.Equal(25000, lines.Length);
 
         bool hasInt = false, hasDouble = false, hasString = false, hasDateTime = false;
 

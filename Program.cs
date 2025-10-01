@@ -10,7 +10,7 @@ namespace CsvRandomGenerator
     {
         public static void Main(string[] args)
         {
-            if (args.Contains("--help") || args.Contains("-h"))
+            if (args.Length == 0 || args.Contains("--help") || args.Contains("-h"))
             {
                 PrintHelp();
                 return;
