@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CsvRandomGenerator.csproj" />
+    <ProjectReference Include="..\CsvRandomGenerator\CsvRandomGenerator.csproj" />
   </ItemGroup>
 
 </Project>
