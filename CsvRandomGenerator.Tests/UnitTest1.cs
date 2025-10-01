@@ -310,4 +310,58 @@ public class UnitTest1
         // Cleanup
         Directory.Delete(folder, true);
     }
+
+    [Fact]
+    public void TestNormalMode()
+    {
+        // Arrange
+        string tempPath = Path.GetTempPath();
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        Directory.CreateDirectory(folder);
+        string output = "test_normal.csv";
+
+        // Act: Generate CSV in normal mode (duration = 0)
+        CsvRandomGenerator.Program.GenerateCsv(5, 3, folder, output, null);
+
+        // Assert
+        var files = Directory.GetFiles(folder, "test_normal.csv");
+        Assert.True(files.Length > 0);
+        var outputPath = files.First();
+        var lines = File.ReadAllLines(outputPath);
+        Assert.Equal(5, lines.Length);
+        foreach (var line in lines)
+        {
+            var columns = line.Split(',');
+            Assert.Equal(3, columns.Length);
+        }
+
+        // Cleanup
+        Directory.Delete(folder, true);
+    }
+
+    [Fact]
+    public void TestFolderCreation()
+    {
+        // Arrange
+        string tempPath = Path.GetTempPath();
+        string nonExistentFolder = Path.Combine(tempPath, "NonExistentFolder");
+        string output = "test_folder_creation.csv";
+
+        // Ensure folder does not exist
+        if (Directory.Exists(nonExistentFolder))
+        {
+            Directory.Delete(nonExistentFolder, true);
+        }
+
+        // Act: Generate CSV, folder should be created automatically
+        CsvRandomGenerator.Program.GenerateCsv(3, 2, nonExistentFolder, output, null);
+
+        // Assert
+        Assert.True(Directory.Exists(nonExistentFolder));
+        var files = Directory.GetFiles(nonExistentFolder, "test_folder_creation.csv");
+        Assert.True(files.Length > 0);
+
+        // Cleanup
+        Directory.Delete(nonExistentFolder, true);
+    }
 }
