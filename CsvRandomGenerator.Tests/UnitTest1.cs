@@ -265,6 +265,44 @@ public class UnitTest1
         stringWriter.Dispose();
     }
 
+    [Fact(Timeout = 10000)]
+    public async Task TestMaxFilesExceeded()
+    {
+        // Arrange
+        string tempPath = Path.GetTempPath();
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        Directory.CreateDirectory(folder);
+
+        // Clean up any existing files
+        foreach (var file in Directory.GetFiles(folder, "test_maxfiles_exceeded_*.csv"))
+        {
+            File.Delete(file);
+        }
+
+        var stringWriter = new StringWriter();
+        var originalOut = Console.Out;
+        Console.SetOut(stringWriter);
+
+        // Act: Start Main with duration > 0 and max-files = 2
+        var task = Task.Run(() => CsvRandomGenerator.Program.Main(new string[] { "--rows", "5", "--cols", "3", "--output", Path.Combine(folder, "test_maxfiles_exceeded.csv"), "--duration", "1", "--max-files", "2" }));
+
+        // Wait for more than 2 seconds to allow 3 generations, but should stop at 2
+        await Task.Delay(3500);
+
+        // Assert
+        var files = Directory.GetFiles(folder, "test_maxfiles_exceeded_*.csv");
+        Assert.True(files.Length <= 2, $"Expected <= 2 files, but got {files.Length}");
+
+        // Cleanup
+        foreach (var file in files)
+        {
+            File.Delete(file);
+        }
+        Directory.Delete(folder);
+        Console.SetOut(originalOut);
+        stringWriter.Dispose();
+    }
+
     [Fact]
     public void TestDataTypes()
     {
