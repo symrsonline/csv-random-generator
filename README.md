@@ -1,7 +1,7 @@
 # CSV ランダムジェネレーター
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![codecov](https://codecov.io/gh/symrsonline/csv-random-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/symrsonline/csv-random-generator)
+[![codecov](https://codecov.io/gh/symrsonline/csv-random-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/symrsonline/csv-random-generator/tree/master)
 [![CI](https://github.com/symrsonline/csv-random-generator/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/symrsonline/csv-random-generator/actions/workflows/ci-cd.yml)
 
 このプロジェクトは、指定された行数と列数のランダムなCSVファイルを生成し、指定されたフォルダに出力します。

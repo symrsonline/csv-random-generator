@@ -8,3 +8,4 @@ test.csv
 *.swp
 *.swo
 .vscode/settings.json
+publish/
