@@ -214,4 +214,48 @@ public class UnitTest1
         Console.SetOut(originalOut);
         stringWriter.Dispose();
     }
+
+    [Fact]
+    public void TestDataTypes()
+    {
+        // Arrange
+        string tempPath = Path.GetTempPath();
+        string outputPath = Path.Combine(tempPath, "test_datatypes.csv");
+        string folder = Path.GetDirectoryName(outputPath) ?? tempPath;
+        string output = Path.GetFileName(outputPath);
+
+        // Act: Generate CSV with many rows and columns to ensure all types appear
+        CsvRandomGenerator.Program.GenerateCsv(10000, 10, folder, output, null);
+
+        // Assert
+        Assert.True(File.Exists(outputPath));
+        var lines = File.ReadAllLines(outputPath);
+        Assert.Equal(10000, lines.Length);
+
+        bool hasInt = false, hasDouble = false, hasString = false, hasDateTime = false;
+
+        foreach (var line in lines)
+        {
+            var columns = line.Split(',');
+            foreach (var col in columns)
+            {
+                if (int.TryParse(col, out _))
+                    hasInt = true;
+                else if (double.TryParse(col, out _) && col.Contains('.'))
+                    hasDouble = true;
+                else if (System.Text.RegularExpressions.Regex.IsMatch(col, @"^[A-Z]{5,10}$"))
+                    hasString = true;
+                else if (DateTime.TryParseExact(col, "yyyy/MM/dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out _))
+                    hasDateTime = true;
+            }
+        }
+
+        Assert.True(hasInt, "Should have integer columns");
+        Assert.True(hasDouble, "Should have double columns");
+        Assert.True(hasString, "Should have string columns");
+        Assert.True(hasDateTime, "Should have datetime columns");
+
+        // Cleanup
+        File.Delete(outputPath);
+    }
 }
