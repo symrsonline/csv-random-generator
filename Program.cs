@@ -6,6 +6,8 @@ using System.Threading;
 
 namespace CsvRandomGenerator
 {
+    public enum DataType { Int, Double, String, DateTime }
+
     public class Program
     {
         public static void Main(string[] args)
@@ -28,6 +30,11 @@ namespace CsvRandomGenerator
             int? sortColumn = GetOptionNullable(options, "sort-column");
             int duration = GetOption(options, "duration", 0);
             int maxFiles = GetOption(options, "max-files", 0);
+            Dictionary<int, DataType>? columnTypes = null;
+            if (options.TryGetValue("column-types", out var typesStr))
+            {
+                columnTypes = ParseColumnTypes(typesStr);
+            }
 
             if (duration > 0)
             {
@@ -37,7 +44,7 @@ namespace CsvRandomGenerator
                     if (maxFiles == 0 || Directory.GetFiles(folder).Length < maxFiles)
                     {
                         string timestampedOutput = baseName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + extension;
-                        GenerateCsv(rows, cols, folder, timestampedOutput, null, append: false);
+                        GenerateCsv(rows, cols, folder, timestampedOutput, null, append: false, columnTypes);
                     }
                     Thread.Sleep(duration * 1000);
                 }
@@ -45,7 +52,7 @@ namespace CsvRandomGenerator
             else
             {
                 string timestampedOutput = baseName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + extension;
-                GenerateCsv(rows, cols, folder, timestampedOutput, sortColumn, append: false);
+                GenerateCsv(rows, cols, folder, timestampedOutput, sortColumn, append: false, columnTypes);
             }
         }
 
@@ -64,6 +71,7 @@ namespace CsvRandomGenerator
             Console.WriteLine("  --sort-column <index>  Column to sort by (0-based index, optional)");
             Console.WriteLine("  --duration <seconds>   Interval to append data (optional, continuous mode)");
             Console.WriteLine("  --max-files <number>   Maximum number of files in output folder (0 for unlimited, default: 0)");
+            Console.WriteLine("  --column-types <types> Specify data types for columns (e.g., '0:int,1:string,2:double')");
             Console.WriteLine("  --help, -h             Show this help message");
             Console.WriteLine();
             Console.WriteLine("Data Types:");
@@ -98,15 +106,37 @@ namespace CsvRandomGenerator
             return options.TryGetValue(key, out var value) && int.TryParse(value, out var result) ? result : (int?)null;
         }
 
-        public static void GenerateCsv(int rows, int cols, string folder, string output, int? sortColumn, bool append = false)
+        static Dictionary<int, DataType> ParseColumnTypes(string typesStr)
+        {
+            var dict = new Dictionary<int, DataType>();
+            var pairs = typesStr.Split(',');
+            foreach (var pair in pairs)
+            {
+                var parts = pair.Split(':');
+                if (parts.Length == 2 && int.TryParse(parts[0], out var col) && Enum.TryParse<DataType>(parts[1], true, out var type))
+                {
+                    dict[col] = type;
+                }
+            }
+            return dict;
+        }
+
+        public static void GenerateCsv(int rows, int cols, string folder, string output, int? sortColumn, bool append = false, Dictionary<int, DataType>? specifiedTypes = null)
         {
             Directory.CreateDirectory(folder);
 
             Random random = new Random();
-            int[] columnTypes = new int[cols];
+            DataType[] columnTypes = new DataType[cols];
             for (int j = 0; j < cols; j++)
             {
-                columnTypes[j] = random.Next(4);
+                if (specifiedTypes != null && specifiedTypes.TryGetValue(j, out var type))
+                {
+                    columnTypes[j] = type;
+                }
+                else
+                {
+                    columnTypes[j] = (DataType)random.Next(4);
+                }
             }
             List<string[]> data = new List<string[]>();
             for (int i = 0; i < rows; i++)
@@ -114,15 +144,22 @@ namespace CsvRandomGenerator
                 string[] row = new string[cols];
                 for (int j = 0; j < cols; j++)
                 {
-                    int type = columnTypes[j];
-                    if (type == 0)
-                        row[j] = random.Next(0, 101).ToString();
-                    else if (type == 1)
-                        row[j] = Math.Round(random.NextDouble() * 100, 2).ToString();
-                    else if (type == 2)
-                        row[j] = new string(Enumerable.Range(0, random.Next(5, 11)).Select(_ => (char)random.Next(65, 91)).ToArray());
-                    else
-                        row[j] = DateTime.Now.AddDays(random.Next(-365, 365)).AddHours(random.Next(24)).AddMinutes(random.Next(60)).AddSeconds(random.Next(60)).ToString("yyyy/MM/dd HH:mm:ss");
+                    DataType type = columnTypes[j];
+                    switch (type)
+                    {
+                        case DataType.Int:
+                            row[j] = random.Next(0, 101).ToString();
+                            break;
+                        case DataType.Double:
+                            row[j] = Math.Round(random.NextDouble() * 100, 2).ToString();
+                            break;
+                        case DataType.String:
+                            row[j] = new string(Enumerable.Range(0, random.Next(5, 11)).Select(_ => (char)random.Next(65, 91)).ToArray());
+                            break;
+                        case DataType.DateTime:
+                            row[j] = DateTime.Now.AddDays(random.Next(-365, 365)).AddHours(random.Next(24)).AddMinutes(random.Next(60)).AddSeconds(random.Next(60)).ToString("yyyy/MM/dd HH:mm:ss");
+                            break;
+                    }
                 }
                 data.Add(row);
             }
@@ -131,15 +168,20 @@ namespace CsvRandomGenerator
             {
                 data.Sort((a, b) =>
                 {
-                    int type = columnTypes[sortColumn.Value];
-                    if (type == 0) // int
-                        return int.Parse(a[sortColumn.Value]).CompareTo(int.Parse(b[sortColumn.Value]));
-                    else if (type == 1) // double
-                        return double.Parse(a[sortColumn.Value]).CompareTo(double.Parse(b[sortColumn.Value]));
-                    else if (type == 2) // string
-                        return string.Compare(a[sortColumn.Value], b[sortColumn.Value]);
-                    else // DateTime
-                        return DateTime.Parse(a[sortColumn.Value]).CompareTo(DateTime.Parse(b[sortColumn.Value]));
+                    DataType type = columnTypes[sortColumn.Value];
+                    switch (type)
+                    {
+                        case DataType.Int:
+                            return int.Parse(a[sortColumn.Value]).CompareTo(int.Parse(b[sortColumn.Value]));
+                        case DataType.Double:
+                            return double.Parse(a[sortColumn.Value]).CompareTo(double.Parse(b[sortColumn.Value]));
+                        case DataType.String:
+                            return string.Compare(a[sortColumn.Value], b[sortColumn.Value]);
+                        case DataType.DateTime:
+                            return DateTime.Parse(a[sortColumn.Value]).CompareTo(DateTime.Parse(b[sortColumn.Value]));
+                        default:
+                            return 0;
+                    }
                 });
             }
 

@@ -17,7 +17,7 @@ public class UnitTest1
         string output = "test.csv";
 
         // Act
-        CsvRandomGenerator.Program.GenerateCsv(5, 3, folder, output, null);
+        CsvRandomGenerator.Program.GenerateCsv(5, 3, folder, output, null, false, null);
 
         // Assert
         var files = Directory.GetFiles(folder, "test.csv");
@@ -45,7 +45,7 @@ public class UnitTest1
         string output = "test_sorted.csv";
 
         // Act
-        CsvRandomGenerator.Program.GenerateCsv(10, 2, folder, output, 0); // Sort by first column
+        CsvRandomGenerator.Program.GenerateCsv(10, 2, folder, output, 0, false, null); // Sort by first column
 
         // Assert
         var files = Directory.GetFiles(folder, "test_sorted.csv");
@@ -91,7 +91,7 @@ public class UnitTest1
         string output = "test_sort_double_string.csv";
 
         // Act: Generate CSV with sorting by first column
-        CsvRandomGenerator.Program.GenerateCsv(20, 3, folder, output, 0); // Sort by first column
+        CsvRandomGenerator.Program.GenerateCsv(20, 3, folder, output, 0, false, null); // Sort by first column
 
         // Assert
         var files = Directory.GetFiles(folder, "test_sort_double_string.csv");
@@ -132,9 +132,9 @@ public class UnitTest1
         string output = "test_append.csv";
 
         // Act: First generate
-        CsvRandomGenerator.Program.GenerateCsv(3, 2, folder, output, null, append: false);
+        CsvRandomGenerator.Program.GenerateCsv(3, 2, folder, output, null, false, null);
         // Then append
-        CsvRandomGenerator.Program.GenerateCsv(2, 2, folder, output, null, append: true);
+        CsvRandomGenerator.Program.GenerateCsv(2, 2, folder, output, null, true, null);
 
         // Assert
         var files = Directory.GetFiles(folder, "test_append.csv");
@@ -162,7 +162,7 @@ public class UnitTest1
         string output = Path.GetFileName(outputPath);
 
         // Act: Sort by invalid column (out of range)
-        CsvRandomGenerator.Program.GenerateCsv(5, 2, folder, output, 5); // cols=2, so 5 is invalid
+        CsvRandomGenerator.Program.GenerateCsv(5, 2, folder, output, 5, false, null); // cols=2, so 5 is invalid
 
         // Assert: Should still generate file without sorting
         Assert.True(File.Exists(outputPath));
@@ -359,7 +359,7 @@ public class UnitTest1
         string output = "test_datatypes.csv";
 
         // Act: Generate CSV with many rows and columns to ensure all types appear
-        CsvRandomGenerator.Program.GenerateCsv(25000, 10, folder, output, null);
+        CsvRandomGenerator.Program.GenerateCsv(25000, 10, folder, output, null, false, null);
 
         // Assert
         var files = Directory.GetFiles(folder, "test_datatypes.csv");
@@ -405,7 +405,7 @@ public class UnitTest1
         string output = "test_normal.csv";
 
         // Act: Generate CSV in normal mode (duration = 0)
-        CsvRandomGenerator.Program.GenerateCsv(5, 3, folder, output, null);
+        CsvRandomGenerator.Program.GenerateCsv(5, 3, folder, output, null, false, null);
 
         // Assert
         var files = Directory.GetFiles(folder, "test_normal.csv");
@@ -438,7 +438,7 @@ public class UnitTest1
         }
 
         // Act: Generate CSV, folder should be created automatically
-        CsvRandomGenerator.Program.GenerateCsv(3, 2, nonExistentFolder, output, null);
+        CsvRandomGenerator.Program.GenerateCsv(3, 2, nonExistentFolder, output, null, false, null);
 
         // Assert
         Assert.True(Directory.Exists(nonExistentFolder));
@@ -447,5 +447,43 @@ public class UnitTest1
 
         // Cleanup
         Directory.Delete(nonExistentFolder, true);
+    }
+
+    [Fact]
+    public void TestColumnTypesSpecified()
+    {
+        // Arrange
+        string tempPath = Path.GetTempPath();
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        Directory.CreateDirectory(folder);
+        string output = "test_column_types.csv";
+        var specifiedTypes = new Dictionary<int, CsvRandomGenerator.DataType>
+        {
+            {0, CsvRandomGenerator.DataType.Int},
+            {1, CsvRandomGenerator.DataType.String},
+            {2, CsvRandomGenerator.DataType.Double}
+        };
+
+        // Act
+        CsvRandomGenerator.Program.GenerateCsv(5, 3, folder, output, null, false, specifiedTypes);
+
+        // Assert
+        var files = Directory.GetFiles(folder, "test_column_types.csv");
+        Assert.True(files.Length > 0);
+        var outputPath = files.First();
+        var lines = File.ReadAllLines(outputPath);
+        Assert.Equal(5, lines.Length);
+        foreach (var line in lines)
+        {
+            var columns = line.Split(',');
+            Assert.Equal(3, columns.Length);
+            // Check types: col0 int, col1 string, col2 double
+            Assert.True(int.TryParse(columns[0], out _));
+            Assert.True(double.TryParse(columns[2], out _));
+            // String is harder to check, but assume it's uppercase letters
+        }
+
+        // Cleanup
+        Directory.Delete(folder, true);
     }
 }
