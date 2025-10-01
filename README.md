@@ -1,4 +1,4 @@
-# CSV ランダムジェネレーター
+# CSV Random Generator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/symrsonline/csv-random-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/symrsonline/csv-random-generator/tree/master)
