@@ -10,16 +10,17 @@ public class UnitTest1
     public void TestCsvGeneration()
     {
         // Arrange
-        string folder = Path.GetTempPath();
-        string output = "test.csv";
-        string filePath = Path.Combine(folder, output);
+        string tempPath = Path.GetTempPath();
+        string outputPath = Path.Combine(tempPath, "test.csv");
+        string folder = Path.GetDirectoryName(outputPath) ?? tempPath;
+        string output = Path.GetFileName(outputPath);
 
         // Act
         CsvRandomGenerator.Program.GenerateCsv(5, 3, folder, output, null);
 
         // Assert
-        Assert.True(File.Exists(filePath));
-        var lines = File.ReadAllLines(filePath);
+        Assert.True(File.Exists(outputPath));
+        var lines = File.ReadAllLines(outputPath);
         Assert.Equal(5, lines.Length);
         foreach (var line in lines)
         {
@@ -28,23 +29,24 @@ public class UnitTest1
         }
 
         // Cleanup
-        File.Delete(filePath);
+        File.Delete(outputPath);
     }
 
     [Fact]
     public void TestCsvSorting()
     {
         // Arrange
-        string folder = Path.GetTempPath();
-        string output = "test_sorted.csv";
-        string filePath = Path.Combine(folder, output);
+        string tempPath = Path.GetTempPath();
+        string outputPath = Path.Combine(tempPath, "test_sorted.csv");
+        string folder = Path.GetDirectoryName(outputPath) ?? tempPath;
+        string output = Path.GetFileName(outputPath);
 
         // Act
         CsvRandomGenerator.Program.GenerateCsv(10, 2, folder, output, 0); // Sort by first column
 
         // Assert
-        Assert.True(File.Exists(filePath));
-        var lines = File.ReadAllLines(filePath);
+        Assert.True(File.Exists(outputPath));
+        var lines = File.ReadAllLines(outputPath);
         Assert.Equal(10, lines.Length);
 
         // Check if sorted (assuming first column is numeric or string)
@@ -70,6 +72,6 @@ public class UnitTest1
         }
 
         // Cleanup
-        File.Delete(filePath);
+        File.Delete(outputPath);
     }
 }

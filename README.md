@@ -11,7 +11,7 @@
 以下のコマンドでプログラムを実行します:
 
 ```bash
-dotnet run --rows <行数> --cols <列数> --folder <フォルダ> --output <出力ファイル> --sort-column <ソート列>
+dotnet run --rows <行数> --cols <列数> --output <出力ファイルパス> --sort-column <ソート列>
 ```
 
 オプションは順不同で指定可能。ソート列は0から始まる列インデックス、省略可能。
@@ -19,7 +19,7 @@ dotnet run --rows <行数> --cols <列数> --folder <フォルダ> --output <出
 ### 例
 
 ```bash
-dotnet run --cols 10 --rows 100 --folder ./output --output data.csv --sort-column 2
+dotnet run --cols 10 --rows 100 --output ./output/data.csv --sort-column 2
 ```
 
 これにより、100行10列のランダムデータを`./output`フォルダに生成し、3列目でソートして出力します。

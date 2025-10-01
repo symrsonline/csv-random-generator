@@ -19,8 +19,9 @@ namespace CsvRandomGenerator
 
             int rows = GetOption(options, "rows", 10);
             int cols = GetOption(options, "cols", 5);
-            string folder = GetOption(options, "folder", ".");
-            string output = GetOption(options, "output", "output.csv");
+            string outputPath = GetOption(options, "output", "output.csv");
+            string folder = Path.GetDirectoryName(outputPath) ?? ".";
+            string output = Path.GetFileName(outputPath);
             int? sortColumn = GetOptionNullable(options, "sort-column");
 
             GenerateCsv(rows, cols, folder, output, sortColumn);
@@ -37,8 +38,7 @@ namespace CsvRandomGenerator
             Console.WriteLine("Options:");
             Console.WriteLine("  --rows <number>        Number of rows (default: 10)");
             Console.WriteLine("  --cols <number>        Number of columns (default: 5)");
-            Console.WriteLine("  --folder <path>        Output folder (default: .)");
-            Console.WriteLine("  --output <filename>    Output file name (default: output.csv)");
+            Console.WriteLine("  --output <path>        Output file path (default: output.csv)");
             Console.WriteLine("  --sort-column <index>  Column to sort by (0-based index, optional)");
             Console.WriteLine("  --help, -h             Show this help message");
             Console.WriteLine();
