@@ -30,11 +30,14 @@ namespace CsvRandomGenerator
             if (duration > 0)
             {
                 Console.WriteLine($"Generating CSV every {duration} seconds. Press Ctrl+C to stop.");
+                string baseName = Path.GetFileNameWithoutExtension(output);
+                string extension = Path.GetExtension(output);
                 while (true)
                 {
                     if (maxFiles == 0 || Directory.GetFiles(folder).Length < maxFiles)
                     {
-                        GenerateCsv(rows, cols, folder, output, null, append: true);
+                        string timestampedOutput = baseName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + extension;
+                        GenerateCsv(rows, cols, folder, timestampedOutput, null, append: false);
                     }
                     Thread.Sleep(duration * 1000);
                 }
