@@ -22,10 +22,13 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore CsvRandomGenerator.csproj CsvRandomGenerator.Tests/CsvRandomGenerator.Tests.csproj
+      run: dotnet restore
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: Restore test dependencies
+      run: dotnet restore CsvRandomGenerator.Tests/CsvRandomGenerator.Tests.csproj
+
+    - name: Build main
+      run: dotnet build CsvRandomGenerator.csproj --configuration Release --no-restore
 
     - name: Build tests
       run: dotnet build CsvRandomGenerator.Tests/CsvRandomGenerator.Tests.csproj --configuration Release --no-restore
