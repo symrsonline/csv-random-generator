@@ -11,10 +11,10 @@
 以下のコマンドでプログラムを実行します:
 
 ```bash
-dotnet run --rows <行数> --cols <列数> --output <出力ファイルパス> --sort-column <ソート列>
+dotnet run --rows <行数> --cols <列数> --output <出力ファイルパス> --sort-column <ソート列> --duration <間隔秒>
 ```
 
-オプションは順不同で指定可能。ソート列は0から始まる列インデックス、省略可能。
+オプションは順不同で指定可能。ソート列は0から始まる列インデックス、省略可能。durationを指定すると、指定秒ごとにデータを追加し続けます。
 
 ### 例
 
@@ -23,6 +23,14 @@ dotnet run --cols 10 --rows 100 --output ./output/data.csv --sort-column 2
 ```
 
 これにより、100行10列のランダムデータを`./output`フォルダに生成し、3列目でソートして出力します。
+
+継続的にデータを追加する場合:
+
+```bash
+dotnet run --rows 10 --cols 5 --output data.csv --duration 5
+```
+
+これにより、5秒ごとに10行5列のデータを`data.csv`に追加し続けます。Ctrl+Cで停止。
 
 ヘルプを表示するには:
 

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CsvRandomGenerator
 {
@@ -23,8 +24,21 @@ namespace CsvRandomGenerator
             string folder = Path.GetDirectoryName(outputPath) ?? ".";
             string output = Path.GetFileName(outputPath);
             int? sortColumn = GetOptionNullable(options, "sort-column");
+            int duration = GetOption(options, "duration", 0);
 
-            GenerateCsv(rows, cols, folder, output, sortColumn);
+            if (duration > 0)
+            {
+                Console.WriteLine($"Generating CSV every {duration} seconds. Press Ctrl+C to stop.");
+                while (true)
+                {
+                    GenerateCsv(rows, cols, folder, output, null, append: true);
+                    Thread.Sleep(duration * 1000);
+                }
+            }
+            else
+            {
+                GenerateCsv(rows, cols, folder, output, sortColumn, append: false);
+            }
         }
 
         static void PrintHelp()
@@ -40,6 +54,7 @@ namespace CsvRandomGenerator
             Console.WriteLine("  --cols <number>        Number of columns (default: 5)");
             Console.WriteLine("  --output <path>        Output file path (default: output.csv)");
             Console.WriteLine("  --sort-column <index>  Column to sort by (0-based index, optional)");
+            Console.WriteLine("  --duration <seconds>   Interval to append data (optional, continuous mode)");
             Console.WriteLine("  --help, -h             Show this help message");
             Console.WriteLine();
             Console.WriteLine("Data Types:");
@@ -74,7 +89,7 @@ namespace CsvRandomGenerator
             return options.TryGetValue(key, out var value) && int.TryParse(value, out var result) ? result : (int?)null;
         }
 
-        public static void GenerateCsv(int rows, int cols, string folder, string output, int? sortColumn)
+        public static void GenerateCsv(int rows, int cols, string folder, string output, int? sortColumn, bool append = false)
         {
             Directory.CreateDirectory(folder);
 
@@ -103,7 +118,7 @@ namespace CsvRandomGenerator
                 data.Add(row);
             }
 
-            if (sortColumn.HasValue && sortColumn.Value >= 0 && sortColumn.Value < cols)
+            if (!append && sortColumn.HasValue && sortColumn.Value >= 0 && sortColumn.Value < cols)
             {
                 data.Sort((a, b) =>
                 {
@@ -119,7 +134,7 @@ namespace CsvRandomGenerator
                 });
             }
 
-            using (StreamWriter writer = new StreamWriter(Path.Combine(folder, output)))
+            using (StreamWriter writer = new StreamWriter(Path.Combine(folder, output), append))
             {
                 foreach (var row in data)
                 {
@@ -127,7 +142,7 @@ namespace CsvRandomGenerator
                 }
             }
 
-            Console.WriteLine($"CSV file generated at {Path.Combine(folder, output)}");
+            Console.WriteLine($"CSV data appended to {Path.Combine(folder, output)}");
         }
     }
 }
