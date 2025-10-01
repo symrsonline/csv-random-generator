@@ -82,6 +82,47 @@ public class UnitTest1
     }
 
     [Fact]
+    public void TestSortingDoubleAndString()
+    {
+        // Arrange
+        string tempPath = Path.GetTempPath();
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        Directory.CreateDirectory(folder);
+        string output = "test_sort_double_string.csv";
+
+        // Act: Generate CSV with sorting by first column
+        CsvRandomGenerator.Program.GenerateCsv(20, 3, folder, output, 0); // Sort by first column
+
+        // Assert
+        var files = Directory.GetFiles(folder, "test_sort_double_string.csv");
+        Assert.True(files.Length > 0);
+        var outputPath = files.First();
+        var lines = File.ReadAllLines(outputPath);
+        Assert.Equal(20, lines.Length);
+
+        // Check if sorted (first column should be sorted as double or string)
+        for (int i = 1; i < lines.Length; i++)
+        {
+            var prevParts = lines[i - 1].Split(',');
+            var currParts = lines[i].Split(',');
+            var prev = prevParts[0];
+            var curr = currParts[0];
+            // Try to parse as double, if not, compare as string
+            if (double.TryParse(prev, out var prevNum) && double.TryParse(curr, out var currNum))
+            {
+                Assert.True(prevNum <= currNum, $"Double sort failed: {prevNum} > {currNum}");
+            }
+            else
+            {
+                Assert.True(string.Compare(prev, curr) <= 0, $"String sort failed: {prev} > {curr}");
+            }
+        }
+
+        // Cleanup
+        Directory.Delete(folder, true);
+    }
+
+    [Fact]
     public void TestCsvAppend()
     {
         // Arrange
