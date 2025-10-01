@@ -47,12 +47,26 @@ public class UnitTest1
         var lines = File.ReadAllLines(filePath);
         Assert.Equal(10, lines.Length);
 
-        // Check if sorted (assuming first column is numeric)
+        // Check if sorted (assuming first column is numeric or string)
         for (int i = 1; i < lines.Length; i++)
         {
-            var prev = double.Parse(lines[i - 1].Split(',')[0]);
-            var curr = double.Parse(lines[i].Split(',')[0]);
-            Assert.True(prev <= curr);
+            var prevParts = lines[i - 1].Split(',');
+            var currParts = lines[i].Split(',');
+            var prev = prevParts[0];
+            var curr = currParts[0];
+            // Try to parse as double, if not, compare as string
+            if (double.TryParse(prev, out var prevNum) && double.TryParse(curr, out var currNum))
+            {
+                Assert.True(prevNum <= currNum);
+            }
+            else if (DateTime.TryParse(prev, out var prevDate) && DateTime.TryParse(curr, out var currDate))
+            {
+                Assert.True(prevDate <= currDate);
+            }
+            else
+            {
+                Assert.True(string.Compare(prev, curr) <= 0);
+            }
         }
 
         // Cleanup
