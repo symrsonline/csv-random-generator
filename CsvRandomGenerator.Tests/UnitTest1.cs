@@ -187,4 +187,31 @@ public class UnitTest1
         Assert.Equal("1", result["sort-column"]);
         Assert.Equal("60", result["duration"]);
     }
+
+    [Fact(Timeout = 2000)]
+    public async Task TestDurationMode()
+    {
+        // Arrange
+        var stringWriter = new StringWriter();
+        var originalOut = Console.Out;
+        Console.SetOut(stringWriter);
+
+        // Act: Start Main with duration > 0 in a separate task
+        var task = Task.Run(() => CsvRandomGenerator.Program.Main(new string[] { "--rows", "5", "--cols", "3", "--duration", "1" }));
+
+        // Wait a bit for the output
+        await Task.Delay(500);
+
+        // Assert
+        var output = stringWriter.ToString();
+        Assert.Contains("Generating CSV every 1 seconds. Press Ctrl+C to stop.", output);
+
+        // Cleanup: Cancel the task (simulate Ctrl+C)
+        // Since it's infinite loop, we need to abort the task
+        // For simplicity, just check the output and let the test timeout if needed
+        // In practice, this test will timeout after 2 seconds due to Timeout attribute
+
+        Console.SetOut(originalOut);
+        stringWriter.Dispose();
+    }
 }
