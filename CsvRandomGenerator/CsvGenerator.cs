@@ -32,7 +32,7 @@ namespace CsvRandomGenerator
                 }
                 else
                 {
-                    columnTypes[j] = (DataType)_random.Next(4);
+                    columnTypes[j] = (DataType)_random.Next(5);
                 }
             }
             List<string[]> data = new List<string[]>();
@@ -48,13 +48,16 @@ namespace CsvRandomGenerator
                             row[j] = _random.Next(0, 101).ToString();
                             break;
                         case DataType.Double:
-                            row[j] = Math.Round(_random.NextDouble() * 100, 2).ToString();
+                            row[j] = (_random.NextDouble() * 100).ToString("F2");
                             break;
                         case DataType.String:
                             row[j] = new string(Enumerable.Range(0, _random.Next(5, 11)).Select(_ => (char)_random.Next(65, 91)).ToArray());
                             break;
                         case DataType.DateTime:
                             row[j] = DateTime.Now.AddDays(_random.Next(-365, 365)).AddHours(_random.Next(24)).AddMinutes(_random.Next(60)).AddSeconds(_random.Next(60)).ToString("yyyy/MM/dd HH:mm:ss");
+                            break;
+                        case DataType.Guid:
+                            row[j] = Guid.NewGuid().ToString();
                             break;
                     }
                 }
@@ -76,6 +79,8 @@ namespace CsvRandomGenerator
                             return string.Compare(a[sortColumn.Value], b[sortColumn.Value]);
                         case DataType.DateTime:
                             return DateTime.Parse(a[sortColumn.Value]).CompareTo(DateTime.Parse(b[sortColumn.Value]));
+                        case DataType.Guid:
+                            return Guid.Parse(a[sortColumn.Value]).CompareTo(Guid.Parse(b[sortColumn.Value]));
                         default:
                             return 0;
                     }

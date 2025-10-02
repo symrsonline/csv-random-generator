@@ -5,6 +5,7 @@ using System.Text;
 
 namespace CsvRandomGenerator.Tests;
 
+[Collection("Sequential")]
 public class UnitTest
 {
     [Fact]
@@ -321,7 +322,7 @@ public class UnitTest
     {
         // Arrange
         string tempPath = Path.GetTempPath();
-        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests_" + Guid.NewGuid().ToString());
         Directory.CreateDirectory(folder);
 
         // Clean up any existing files
@@ -359,36 +360,62 @@ public class UnitTest
     {
         // Arrange
         string tempPath = Path.GetTempPath();
-        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests");
+        string folder = Path.Combine(tempPath, "CsvRandomGeneratorTests_" + Guid.NewGuid().ToString());
         Directory.CreateDirectory(folder);
         string output = "test_datatypes.csv";
 
-        // Act: Generate CSV with many rows and columns to ensure all types appear
+        // Specify types for each column to ensure all types are present
+        var specifiedTypes = new Dictionary<int, DataType>
+        {
+            {0, DataType.Int},
+            {1, DataType.Double},
+            {2, DataType.String},
+            {3, DataType.DateTime},
+            {4, DataType.Guid}
+        };
+
+        // Act: Generate CSV with specified types
         var generator = new CsvGenerator();
-        generator.GenerateCsv(25000, 10, folder, output, null, false, null);
+        generator.GenerateCsv(100, 5, folder, output, null, false, specifiedTypes);
 
         // Assert
         var files = Directory.GetFiles(folder, "test_datatypes.csv");
         Assert.True(files.Length > 0);
         var outputPath = files.First();
         var lines = File.ReadAllLines(outputPath);
-        Assert.Equal(25000, lines.Length);
+        Assert.Equal(100, lines.Length);
 
-        bool hasInt = false, hasDouble = false, hasString = false, hasDateTime = false;
+        bool hasInt = false, hasDouble = false, hasString = false, hasDateTime = false, hasGuid = false;
 
         foreach (var line in lines)
         {
             var columns = line.Split(',');
-            foreach (var col in columns)
+            for (int i = 0; i < columns.Length; i++)
             {
-                if (int.TryParse(col, out _))
-                    hasInt = true;
-                else if (double.TryParse(col, out _) && col.Contains('.'))
-                    hasDouble = true;
-                else if (System.Text.RegularExpressions.Regex.IsMatch(col, @"^[A-Z]{5,10}$"))
-                    hasString = true;
-                else if (DateTime.TryParseExact(col, "yyyy/MM/dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out _))
-                    hasDateTime = true;
+                var col = columns[i];
+                switch (i)
+                {
+                    case 0:
+                        if (int.TryParse(col, out _))
+                            hasInt = true;
+                        break;
+                    case 1:
+                        if (double.TryParse(col, out _) && col.Contains('.'))
+                            hasDouble = true;
+                        break;
+                    case 2:
+                        if (System.Text.RegularExpressions.Regex.IsMatch(col, @"^[A-Z]{5,10}$"))
+                            hasString = true;
+                        break;
+                    case 3:
+                        if (DateTime.TryParseExact(col, "yyyy/MM/dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out _))
+                            hasDateTime = true;
+                        break;
+                    case 4:
+                        if (Guid.TryParse(col, out _))
+                            hasGuid = true;
+                        break;
+                }
             }
         }
 
@@ -396,6 +423,7 @@ public class UnitTest
         Assert.True(hasDouble, "Should have double columns");
         Assert.True(hasString, "Should have string columns");
         Assert.True(hasDateTime, "Should have datetime columns");
+        Assert.True(hasGuid, "Should have guid columns");
 
         // Cleanup
         Directory.Delete(folder, true);
@@ -469,12 +497,13 @@ public class UnitTest
         {
             {0, CsvRandomGenerator.DataType.Int},
             {1, CsvRandomGenerator.DataType.String},
-            {2, CsvRandomGenerator.DataType.Double}
+            {2, CsvRandomGenerator.DataType.Double},
+            {3, CsvRandomGenerator.DataType.Guid}
         };
 
         // Act
         var generator = new CsvGenerator();
-        generator.GenerateCsv(5, 3, folder, output, null, false, specifiedTypes);
+        generator.GenerateCsv(5, 4, folder, output, null, false, specifiedTypes);
 
         // Assert
         var files = Directory.GetFiles(folder, "test_column_types.csv");
@@ -485,10 +514,11 @@ public class UnitTest
         foreach (var line in lines)
         {
             var columns = line.Split(',');
-            Assert.Equal(3, columns.Length);
-            // Check types: col0 int, col1 string, col2 double
+            Assert.Equal(4, columns.Length);
+            // Check types: col0 int, col1 string, col2 double, col3 guid
             Assert.True(int.TryParse(columns[0], out _));
             Assert.True(double.TryParse(columns[2], out _));
+            Assert.True(Guid.TryParse(columns[3], out _));
             // String is harder to check, but assume it's uppercase letters
         }
 

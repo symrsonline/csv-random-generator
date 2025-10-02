@@ -89,6 +89,7 @@ dotnet test
 - `double`: 倍精度浮動小数点数 (0-100、小数点以下2桁)
 - `string`: 文字列 (ランダムな大文字アルファベット、5-10文字)
 - `datetime`: 日時 (yyyy/MM/dd HH:mm:ss形式、ランダムな日時)
+- `guid`: GUID (ランダムなGUID)
 
 ## ライセンス
 

@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace CsvRandomGenerator
 {
-    public enum DataType { Int, Double, String, DateTime }
+    public enum DataType { Int, Double, String, DateTime, Guid }
 
     public class Program
     {
@@ -77,7 +77,7 @@ namespace CsvRandomGenerator
             Console.WriteLine("  --help, -h             Show this help message");
             Console.WriteLine();
             Console.WriteLine("Data Types:");
-            Console.WriteLine("  Columns have fixed random types: int, double, string, or DateTime.");
+            Console.WriteLine("  Columns have fixed random types: int, double, string, datetime, or guid.");
         }
     }
 }
