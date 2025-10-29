@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace CsvRandomGenerator
 {
-    public enum DataType { Int, Double, String, DateTime, Guid }
+    public enum DataType { Int, Double, String, DateTimeRandom, DateTimeNow, Guid }
 
     public class Program
     {
@@ -73,11 +73,17 @@ namespace CsvRandomGenerator
             Console.WriteLine("  --sort-column <index>  Column to sort by (0-based index, optional)");
             Console.WriteLine("  --duration <seconds>   Interval to append data (optional, continuous mode)");
             Console.WriteLine("  --max-files <number>   Maximum number of files in output folder (0 for unlimited, default: 0)");
-            Console.WriteLine("  --column-types <types> Specify data types for columns (e.g., '0:int,1:string,2:double')");
+            Console.WriteLine("  --column-types <types> Specify data types for columns (e.g., '0:int,1:string,2:datetime:random')");
             Console.WriteLine("  --help, -h             Show this help message");
             Console.WriteLine();
             Console.WriteLine("Data Types:");
-            Console.WriteLine("  Columns have fixed random types: int, double, string, datetime, or guid.");
+            Console.WriteLine("  int: Integer (0-100)");
+            Console.WriteLine("  double: Double precision float (0-100)");
+            Console.WriteLine("  string: Random uppercase string (5-10 chars)");
+            Console.WriteLine("  datetime:random: Random datetime (yyyy/MM/dd HH:mm:ss)");
+            Console.WriteLine("  datetime:now: Current datetime (yyyy/MM/dd HH:mm:ss)");
+            Console.WriteLine("  guid: Random GUID");
+            Console.WriteLine("  If no subtype specified for datetime, defaults to random.");
         }
     }
 }

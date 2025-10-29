@@ -370,13 +370,14 @@ public class UnitTest
             {0, DataType.Int},
             {1, DataType.Double},
             {2, DataType.String},
-            {3, DataType.DateTime},
-            {4, DataType.Guid}
+            {3, DataType.DateTimeRandom},
+            {4, DataType.DateTimeNow},
+            {5, DataType.Guid}
         };
 
         // Act: Generate CSV with specified types
         var generator = new CsvGenerator();
-        generator.GenerateCsv(100, 5, folder, output, null, false, specifiedTypes);
+        generator.GenerateCsv(100, 6, folder, output, null, false, specifiedTypes);
 
         // Assert
         var files = Directory.GetFiles(folder, "test_datatypes.csv");
@@ -385,7 +386,7 @@ public class UnitTest
         var lines = File.ReadAllLines(outputPath);
         Assert.Equal(100, lines.Length);
 
-        bool hasInt = false, hasDouble = false, hasString = false, hasDateTime = false, hasGuid = false;
+        bool hasInt = false, hasDouble = false, hasString = false, hasDateTimeRandom = false, hasDateTimeNow = false, hasGuid = false;
 
         foreach (var line in lines)
         {
@@ -409,9 +410,13 @@ public class UnitTest
                         break;
                     case 3:
                         if (DateTime.TryParseExact(col, "yyyy/MM/dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out _))
-                            hasDateTime = true;
+                            hasDateTimeRandom = true;
                         break;
                     case 4:
+                        if (DateTime.TryParse(col, out _))
+                            hasDateTimeNow = true;
+                        break;
+                    case 5:
                         if (Guid.TryParse(col, out _))
                             hasGuid = true;
                         break;
@@ -422,7 +427,8 @@ public class UnitTest
         Assert.True(hasInt, "Should have integer columns");
         Assert.True(hasDouble, "Should have double columns");
         Assert.True(hasString, "Should have string columns");
-        Assert.True(hasDateTime, "Should have datetime columns");
+        Assert.True(hasDateTimeRandom, "Should have datetime (random) columns");
+        Assert.True(hasDateTimeNow, "Should have datetime (now) columns");
         Assert.True(hasGuid, "Should have guid columns");
 
         // Cleanup

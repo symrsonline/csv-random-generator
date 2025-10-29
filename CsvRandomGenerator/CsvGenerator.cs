@@ -53,8 +53,11 @@ namespace CsvRandomGenerator
                         case DataType.String:
                             row[j] = new string(Enumerable.Range(0, _random.Next(5, 11)).Select(_ => (char)_random.Next(65, 91)).ToArray());
                             break;
-                        case DataType.DateTime:
+                        case DataType.DateTimeRandom:
                             row[j] = DateTime.Now.AddDays(_random.Next(-365, 365)).AddHours(_random.Next(24)).AddMinutes(_random.Next(60)).AddSeconds(_random.Next(60)).ToString("yyyy/MM/dd HH:mm:ss");
+                            break;
+                        case DataType.DateTimeNow:
+                            row[j] = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                             break;
                         case DataType.Guid:
                             row[j] = Guid.NewGuid().ToString();
@@ -77,7 +80,8 @@ namespace CsvRandomGenerator
                             return double.Parse(a[sortColumn.Value]).CompareTo(double.Parse(b[sortColumn.Value]));
                         case DataType.String:
                             return string.Compare(a[sortColumn.Value], b[sortColumn.Value]);
-                        case DataType.DateTime:
+                        case DataType.DateTimeRandom:
+                        case DataType.DateTimeNow:
                             return DateTime.Parse(a[sortColumn.Value]).CompareTo(DateTime.Parse(b[sortColumn.Value]));
                         case DataType.Guid:
                             return Guid.Parse(a[sortColumn.Value]).CompareTo(Guid.Parse(b[sortColumn.Value]));

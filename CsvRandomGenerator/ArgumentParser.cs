@@ -40,8 +40,35 @@ namespace CsvRandomGenerator
             foreach (var pair in pairs)
             {
                 var parts = pair.Split(':');
-                if (parts.Length == 2 && int.TryParse(parts[0], out var col) && Enum.TryParse<DataType>(parts[1], true, out var type))
+                if (parts.Length >= 2 && int.TryParse(parts[0], out var col))
                 {
+                    string typeStr = parts[1].ToLower();
+                    DataType type;
+                    if (typeStr == "datetime")
+                    {
+                        if (parts.Length >= 3)
+                        {
+                            string subType = parts[2].ToLower();
+                            if (subType == "random")
+                                type = DataType.DateTimeRandom;
+                            else if (subType == "now")
+                                type = DataType.DateTimeNow;
+                            else
+                                continue; // invalid
+                        }
+                        else
+                        {
+                            type = DataType.DateTimeRandom; // default
+                        }
+                    }
+                    else if (Enum.TryParse<DataType>(typeStr, true, out type))
+                    {
+                        // for other types like int, double, etc.
+                    }
+                    else
+                    {
+                        continue; // invalid type
+                    }
                     dict[col] = type;
                 }
             }
